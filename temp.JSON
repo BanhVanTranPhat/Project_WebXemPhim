@@ -1,0 +1,36 @@
+[
+    {
+      "title": "Inside Out",
+      "description": "Mô tả cho phim Inside Out",
+      "videoUrl": "../../public/video/Inside_Out.mp4",
+      "subtitles": [
+        {
+          "language": "vi",
+          "subtitleUrl": "public/subtitles/Inside_Out_sub_vi.vtt"
+        },
+        {
+          "language": "en",
+          "subtitleUrl": "public/subtitles/Inside_Out_sub_en.vtt"
+        }
+      ],
+      "thumbnailUrl": "https://example.com/video1_thumbnail.jpg",
+      "videoIdByTMDB": 1022789
+    },
+    {
+      "title": "Phim Ponyo lokpham viet cho dai dong de check database",
+      "description": "Mô tả phim Ponyo",
+      "videoUrl": "../../public/video/Ponyo.mp4",
+      "subtitles": [
+        {
+          "language": "vi",
+          "subtitleUrl": "public/subtitles/Ponyo_sub_vi.vtt"
+        },
+        {
+          "language": "en",
+          "subtitleUrl": "public/subtitles/Ponyo_sub_en.vtt"
+        }
+      ],
+      "thumbnailUrl": "https://example.com/video2_thumbnail.jpg",
+      "videoIdByTMDB": 12429
+    }
+  ]
