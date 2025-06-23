@@ -1,21 +1,23 @@
 // src/App.jsx
-import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HeaderSection from './components/HeaderSection';
-import HomePage from './pages/HomePage';
-import MovieDetailPage from './pages/MovieDetailPage';
-import LoginComponent from './components/LoginComponent';
-import FooterSection from './components/FooterSection';
-import AllMoviesPage from './pages/AllMoviesPage';
-import PremiumContent from './components/PremiumContent';
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HeaderSection from "./components/HeaderSection";
+import HomePage from "./pages/HomePage";
+import MovieDetailPage from "./pages/MovieDetailPage";
+import LoginComponent from "./components/LoginComponent";
+import FooterSection from "./components/FooterSection";
+import AllMoviesPage from "./pages/AllMoviesPage";
+import PremiumContent from "./components/PremiumContent";
 import { UserContext } from "./Context/UserContext";
-import ProtectedRoute from './components/ProtectedRoute';
-import PaymentPage from './pages/PaymentPage';
-import ProfilePage from './pages/ProfilePage';
-import WatchMovies from './components/WatchMovies';
-import VideoPlayer from './components/VideoPlayer';
-import VideoList from './components/VideoListComp';
-import VideoPlayerDetail from './components/VideoPlayerDetail';
+import ProtectedRoute from "./components/ProtectedRoute";
+import PaymentPage from "./pages/PaymentPage";
+import ProfilePage from "./pages/ProfilePage";
+import WatchMovies from "./components/WatchMovies";
+import VideoPlayer from "./components/VideoPlayer";
+import VideoList from "./components/VideoListComp";
+import VideoPlayerDetail from "./components/VideoPlayerDetail";
+import AdminHomePage from "./pages/AdminHomePage";
+
 function App() {
   const [user, setUser] = useState(null);
 
@@ -47,9 +49,12 @@ function App() {
               <Route path="/movie/:id" element={<MovieDetailPage />} />
               <Route path="/login" element={<LoginComponent />} />
               <Route path="/category/" element={<AllMoviesPage />} />
-              <Route path="/check/category/watchmovies/:_id" element={<VideoPlayerDetail />} />
-              <Route path="/watch" element={<VideoPlayer />} /> 
-              <Route path="/watch/:_id" element={<WatchMovies />} /> 
+              <Route
+                path="/check/category/watchmovies/:_id"
+                element={<VideoPlayerDetail />}
+              />
+              <Route path="/watch" element={<VideoPlayer />} />
+              <Route path="/watch/:_id" element={<WatchMovies />} />
               <Route path="/payment" element={<PaymentPage />} />
               {/* <Route path="/category/watch" element={<WatchMovies />} /> */}
               <Route
@@ -60,12 +65,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/admin" element={<AdminHomePage />} />
             </Routes>
           </main>
           <FooterSection />
         </div>
       </Router>
-      </UserContext.Provider>
+    </UserContext.Provider>
   );
 }
 
