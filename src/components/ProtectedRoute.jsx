@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../Context/UserContext";
 import PropTypes from "prop-types";
+import toast from "react-hot-toast";
 
 const ProtectedRoute = ({ children, requiresPremium = false }) => {
   const { user, isPremium } = useContext(UserContext);
@@ -12,7 +13,11 @@ const ProtectedRoute = ({ children, requiresPremium = false }) => {
   }
 
   // Nếu yêu cầu premium và người dùng không phải là premium, chuyển hướng đến trang thanh toán
-  if (requiresPremium && !isPremium) {
+  if (
+    requiresPremium &&
+    !(isPremium || user?.role === "vip" || user?.role === "admin")
+  ) {
+    toast.error("Bạn cần nâng cấp Premium để truy cập nội dung này!");
     return <Navigate to="/payment" />;
   }
 

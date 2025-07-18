@@ -12,10 +12,10 @@ const router = express.Router();
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ["user", "admin"], default: "user" },
+  role: { type: String, enum: ["user", "admin", "vip"], default: "user" },
   isPremium: { type: Boolean, default: false },
   email: { type: String, required: true, unique: true },
-  watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
+  watchlist: [{ type: String }],
   ratings: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rating" }],
 });
 
@@ -64,7 +64,7 @@ router.post("/register", async (req, res) => {
 
 // Route để đăng nhập người dùng
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body; 
+  const { username, password } = req.body;
 
   try {
     const user = await User.findOne({ username });
@@ -120,8 +120,13 @@ router.post("/update-premium", authenticateToken, async (req, res) => {
 
     if (user) {
       user.isPremium = true; // Cập nhật trạng thái premium
+      user.role = "vip"; // Cập nhật role thành vip
       await user.save();
-      res.json({ message: "Cập nhật thành công", isPremium: user.isPremium });
+      res.json({
+        message: "Cập nhật thành công",
+        isPremium: user.isPremium,
+        role: user.role,
+      });
     } else {
       res.status(404).json({ message: "Người dùng không tồn tại" });
     }
@@ -134,6 +139,37 @@ router.post("/update-premium", authenticateToken, async (req, res) => {
 router.get("/premium-content", authenticateToken, async (req, res) => {
   const premiumContent = "Nội dung premium của bạn ở đây";
   res.json(premiumContent);
+});
+
+// Thêm phim vào watchlist
+router.post("/add-to-watchlist", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { movieId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user.watchlist.includes(movieId)) {
+      user.watchlist.push(movieId);
+      await user.save();
+    }
+    res.json({ message: "Đã thêm vào playlist", watchlist: user.watchlist });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi thêm vào playlist", error });
+  }
+});
+// Xóa phim khỏi watchlist
+router.post("/remove-from-watchlist", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { movieId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    user.watchlist = user.watchlist.filter((id) => id !== movieId);
+    await user.save();
+    res.json({ message: "Đã xóa khỏi playlist", watchlist: user.watchlist });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi xóa khỏi playlist", error });
+  }
 });
 
 export default router;
