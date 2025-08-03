@@ -43,17 +43,13 @@ function LoginComponent() {
       });
       if (response.ok) {
         const userData = await response.json();
-        // Nếu localStorage đã có user VIP thì giữ nguyên trạng thái VIP
-        const localUser = localStorage.getItem("user");
-        let finalUser = userData.user;
-        if (localUser) {
-          const parsed = JSON.parse(localUser);
-          if (parsed.isPremium || parsed.role === "vip") {
-            finalUser = { ...finalUser, isPremium: true, role: "vip" };
-          }
-        }
+        console.log("Login response:", userData);
+
+        // Lưu user từ server response
+        const finalUser = userData.user;
         setUser(finalUser);
         localStorage.setItem("user", JSON.stringify(finalUser));
+
         if (userData.token) {
           localStorage.setItem("token", userData.token);
         }
@@ -97,8 +93,9 @@ function LoginComponent() {
       });
       if (response.ok) {
         const userData = await response.json();
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
+        console.log("Register response:", userData);
+        setUser(userData.user);
+        localStorage.setItem("user", JSON.stringify(userData.user));
         toast.success("Đăng ký thành công!");
         navigate("/");
       } else {

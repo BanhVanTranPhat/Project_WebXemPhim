@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key_here_2024";
 const router = express.Router();
 
 // Định nghĩa schema cho User
@@ -86,6 +86,7 @@ router.post("/login", async (req, res) => {
         username: user.username,
         email: user.email,
         isPremium: user.isPremium,
+        role: user.role,
       },
       token,
     });

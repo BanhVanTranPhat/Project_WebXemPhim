@@ -1,15 +1,18 @@
 // src/App.jsx
-import { useState, useEffect, Suspense, lazy } from "react";
+import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HeaderSection from "./components/HeaderSection";
 import FooterSection from "./components/FooterSection";
-import { UserContext } from "./Context/UserContext";
+import { UserProvider } from "./Context/UserContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NetworkStatus from "./components/NetworkStatus";
+import PerformanceMonitor from "./components/PerformanceMonitor";
 // Lazy load các page lớn
-const HomePage = lazy(() => import("./pages/HomePage"));
+const OptimizedHomePage = lazy(() => import("./pages/OptimizedHomePage"));
 const MovieDetailPage = lazy(() => import("./pages/MovieDetailPage"));
+const PersonDetailPage = lazy(() => import("./pages/PersonDetailPage"));
 const LoginComponent = lazy(() => import("./components/LoginComponent"));
-const AllMoviesPage = lazy(() => import("./pages/AllMoviesPage"));
+const SimpleAllMoviesPage = lazy(() => import("./pages/SimpleAllMoviesPage"));
 const PremiumContent = lazy(() => import("./components/PremiumContent"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
@@ -19,39 +22,27 @@ const VideoPlayerDetail = lazy(() => import("./components/VideoPlayerDetail"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function App() {
-  const [user, setUser] = useState(null);
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-  };
-
-  useEffect(() => {
-    const checkUserSession = async () => {
-      const savedUser = localStorage.getItem("user");
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      } else {
-        setUser(null);
-      }
-    };
-    checkUserSession();
-  }, []);
-
   return (
-    <UserContext.Provider value={{ user, setUser, logout }}>
+    <UserProvider>
       <Router>
         <div className="flex flex-col min-h-screen">
           <HeaderSection />
           <main className="flex-grow">
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
-                <Route path="/" element={<HomePage />} />
+                <Route path="/" element={<OptimizedHomePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/movie/:id" element={<MovieDetailPage />} />
+                <Route
+                  path="/person/:personId"
+                  element={<PersonDetailPage />}
+                />
                 <Route path="/login" element={<LoginComponent />} />
-                <Route path="/category/" element={<AllMoviesPage />} />
-                <Route path="/category/:genre" element={<AllMoviesPage />} />
+                <Route path="/category/" element={<SimpleAllMoviesPage />} />
+                <Route
+                  path="/category/:genre"
+                  element={<SimpleAllMoviesPage />}
+                />
                 <Route
                   path="/check/category/watchmovies/:_id"
                   element={<VideoPlayerDetail />}
@@ -74,18 +65,17 @@ function App() {
                 />
                 <Route path="/payment" element={<PaymentPage />} />
                 {/* <Route path="/category/watch" element={<WatchMovies />} /> */}
-                <Route
-                  path="/premium"
-                  element={user ? <PremiumContent /> : <LoginComponent />}
-                />
+                <Route path="/premium" element={<PremiumContent />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </main>
           <FooterSection />
         </div>
+        <NetworkStatus />
+        <PerformanceMonitor />
       </Router>
-    </UserContext.Provider>
+    </UserProvider>
   );
 }
 

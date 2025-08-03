@@ -28,28 +28,69 @@ const MovieCard = React.memo(({ movie, categories, onClick }) => {
       toast.error("Bạn cần đăng nhập để thêm vào playlist!");
       return;
     }
+
     const token = localStorage.getItem("token");
+    console.log("AllMoviesPage - User:", user);
+    console.log("AllMoviesPage - Token:", token);
+    console.log("AllMoviesPage - Movie ID:", movie.id);
+
+    if (!token) {
+      toast.error("Token không hợp lệ, vui lòng đăng nhập lại!");
+      return;
+    }
+
     const url = isInPlaylist
       ? "http://localhost:5001/api/users/remove-from-watchlist"
       : "http://localhost:5001/api/users/add-to-watchlist";
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ movieId: String(movie.id) }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      const newUser = { ...user, watchlist: data.watchlist };
-      setUser(newUser);
-      localStorage.setItem("user", JSON.stringify(newUser));
-      toast.success(
-        isInPlaylist ? "Đã xóa khỏi playlist!" : "Đã thêm vào playlist!"
-      );
-    } else {
-      toast.error("Lỗi khi cập nhật playlist!");
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ movieId: String(movie.id) }),
+      });
+
+      console.log("AllMoviesPage - Response status:", res.status);
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("AllMoviesPage - Response data:", data);
+        const newUser = { ...user, watchlist: data.watchlist };
+        setUser(newUser);
+        localStorage.setItem("user", JSON.stringify(newUser));
+        toast.success(
+          isInPlaylist ? "Đã xóa khỏi playlist!" : "Đã thêm vào playlist!"
+        );
+      } else {
+        // Xử lý lỗi 403 (Forbidden) - Token hết hạn hoặc không hợp lệ
+        if (res.status === 403) {
+          console.error("AllMoviesPage - Token expired or invalid");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setUser(null);
+          toast.error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!");
+          return;
+        }
+
+        // Xử lý các lỗi khác
+        try {
+          const errorData = await res.json();
+          console.error("AllMoviesPage - Error response:", errorData);
+          toast.error(errorData.message || "Lỗi khi cập nhật playlist!");
+        } catch (parseError) {
+          console.error(
+            "AllMoviesPage - Cannot parse error response:",
+            parseError
+          );
+          toast.error("Lỗi khi cập nhật playlist!");
+        }
+      }
+    } catch (error) {
+      console.error("AllMoviesPage - Fetch error:", error);
+      toast.error("Lỗi kết nối server!");
     }
   };
 
@@ -194,10 +235,11 @@ const AllMoviesPage = () => {
   const fetcher = (url) => axios.get(url).then((res) => res.data);
 
   // SWR fetch categories
-  const { data: categories = [], error: catError } = useSWR(
+  const { data: categoriesData = {}, error: catError } = useSWR(
     `${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`,
     fetcher
   );
+  const categories = categoriesData.genres || [];
 
   // SWR fetch movies
   const {

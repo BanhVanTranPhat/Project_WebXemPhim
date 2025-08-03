@@ -239,9 +239,11 @@ const HeaderSection = () => {
             </div>
 
             <button
-              onClick={handlePremiumClick}
+              onClick={() => {
+                handlePremiumClick();
+                setIsMobileMenuOpen(false);
+              }}
               className="block w-full text-center bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg transition-colors font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
             >
               Premium
             </button>

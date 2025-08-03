@@ -14,9 +14,12 @@
   "dependencies": {
     "axios": "^1.7.7",
     "bcrypt": "^5.1.1",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.453.0",
     "mongoose": "^8.7.1",
@@ -45,6 +48,7 @@
     "globals": "^15.9.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.12",
+    "terser": "^5.43.1",
     "vite": "^5.4.1"
   }
 }

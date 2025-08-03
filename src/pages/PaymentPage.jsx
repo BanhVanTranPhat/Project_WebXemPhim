@@ -12,6 +12,9 @@ const PaymentPage = () => {
   const isVip =
     user?.isPremium || user?.role === "vip" || user?.role === "admin";
 
+  console.log("PaymentPage - User:", user);
+  console.log("PaymentPage - isVip:", isVip);
+
   const handlePayment = async () => {
     if (user) {
       try {
@@ -47,7 +50,9 @@ const PaymentPage = () => {
     }
   };
 
-  if (isVip) {
+  // Chỉ redirect nếu user thực sự là VIP và đã đăng nhập
+  if (user && isVip) {
+    console.log("User is VIP, redirecting to /watch");
     navigate("/watch");
     return null;
   }
@@ -65,6 +70,23 @@ const PaymentPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
+      <div
+        style={{
+          padding: "20px",
+          background: "#f0f0f0",
+          margin: "10px",
+          maxWidth: "600px",
+        }}
+      >
+        <h3>Debug Info (PaymentPage):</h3>
+        <p>User: {JSON.stringify(user, null, 2)}</p>
+        <p>isVip: {isVip.toString()}</p>
+        <p>User Role: {user?.role}</p>
+        <p>User isPremium: {user?.isPremium?.toString()}</p>
+        <p>LocalStorage User: {localStorage.getItem("user")}</p>
+        <p>LocalStorage Token: {localStorage.getItem("token")}</p>
+      </div>
+
       <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6">
         <strong className="font-bold">Premium chỉ 99.000đ/tháng!</strong>
         <span className="block">
